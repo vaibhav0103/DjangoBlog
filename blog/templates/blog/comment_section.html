@@ -1,0 +1,80 @@
+{% load crispy_forms_tags %}
+
+<!--COMMENT FORM-->
+{% if user.is_authenticated %}
+<div class="col-sm-8 mb-4">
+    <h3>Leave A Reply </h3>
+    <form action="{% url 'add_comment_to_post' pk=post.pk %}" method="POST" class="post-form">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="save btn btn-default">Add Comment</button>
+    </form>
+</div>
+{% endif %}
+{% for comment in comments.all %}
+    {% if post.author == user or comment.approved_comment %}
+        <div class="col-sm-12 mb-2">
+            <div class="row">
+                <div class="col-sm-2 text-center">
+                    <div class="comment-by">
+                        <img src="{{ comment.user.profile.image.url }}" class="rounded-circle img-author-comment" >
+                        <div class="user-comment">{{ comment.user.username }}</div>
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <!--COMMENT SECTION-->
+                    <div class="comment-section">
+                        <div class="comment">
+                            <div class="date"><i class="fas fa-clock"></i> {{ comment.timestamp }}</div>
+                            <p>{{ comment.text|linebreaks }}</p>
+                        </div>
+                        <!--REPLY BUTTON TOGGLE-->
+                        <button type="button" class="btn btn-default reply-btn">Reply ({{comment.replies.count}})</button>
+
+                        {% if not comment.approved_comment %}
+                        <div class="comment-action">
+                            <a class="btn btn-default" href="{% url 'comment_remove' pk=comment.pk %}"><span class="fas fa-minus-circle">Remove</span></a>
+                            <a class="btn btn-default" href="{% url 'comment_approve' pk=comment.pk %}"><span class="fas fa-thumbs-up">Approve</span></a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div style="clear:both;"></div>
+                    <!--REPLY SECTION-->
+                    
+                    <div class="reply-section ml-4" style="display:none;">
+                        {% for reply in comment.replies.all %}
+
+                        <div class="reply">
+                            <div class="reply-user">
+                                <div class="reply-by">
+                                    <img src="{{ reply.user.profile.image.url }}" class="rounded-circle img-author-comment" >
+                                    <div class="user-reply">{{ reply.user.username }}</div>
+                                </div>
+                            </div>
+                            <div class="reply-text">
+                                <div class="date"><i class="fas fa-clock"></i> {{ reply.timestamp }}</div>
+                                <p>{{ reply.text|linebreaks }}</p>
+                            </div>
+                            <div style="clear:both;"></div>
+                        </div>
+                        {% endfor %}
+                        <!--REPLY FORM-->
+                        {% if user.is_authenticated %}
+                        <div class="reply-form">
+                            <h3>Add New Reply</h3>
+                            <form action="{% url 'add_comment_to_post' pk=post.pk %}" method="POST" class="reply-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="comment_id" value="{{ comment.id }}">
+                                {{ form|crispy }}
+                                <button type="submit" class="save btn btn-default">Add Reply</button>
+                            </form>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% empty %}
+    <p>No comments here yet :(</p>
+{% endfor %}

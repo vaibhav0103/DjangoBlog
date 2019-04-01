@@ -1,0 +1,84 @@
+{% extends 'blog/base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<!-- Latest Posts -->
+<main class="post blog-post col-lg-8"> 
+  <div class="container">
+    <div class="post-single">
+      <div class="post-thumbnail"><img src="{{ post.thumbnail.url }}" alt="..." class="img-fluid"></div>
+      <div class="post-details">
+        <div class="post-meta d-flex justify-content-between">
+          <div class="category">
+            {% for cat in post.category.all %}
+              <a href="#">{{cat}}</a>
+            {% endfor %}
+          </div>
+        </div>
+        <h1>{{ post.title }}<a href="#"><i class="fa fa-bookmark-o"></i></a></h1>
+        <div class="post-footer d-flex align-items-center flex-column flex-sm-row"><a href="#" class="author d-flex align-items-center flex-wrap">
+          <div class="avatar">
+            <img src="{{ post.author.profile.image.url }}" alt="..." class="img-fluid">
+          </div>
+          <div class="title"><span>{{ post.author }}</span></div></a>
+          <div class="d-flex align-items-center flex-wrap">       
+            <div class="date"><i class="icon-clock"></i> {{ post.created | timesince }}</div>
+            <div class="views"><i class="icon-eye"></i>{{ post.view_count }} </div>
+            <div class="comments meta-last"><i class="icon-comment"></i>{{ post.comment_count }}</div>
+          </div>
+        </div>
+        <div class="post-body">
+          {{ post.content | safe }}
+        </div>
+        <!-- LIKE SECTION -->
+        <div id="like-section">
+            {% include 'blog/like_section.html' %}
+        </div>
+        <!-- FAVOURITE SECTION -->
+        {% if user.is_authenticated %}
+        <div class="fav-section">
+
+            {% if is_favourite %}
+                <span>Favourited</span>
+                <a href="{% url 'favourite_post' pk=post.pk %}" class="heart" title="Remove Favourite">
+                    <i class="fas fa-heart fa-2x"></i>
+                </a>
+            {% else %}
+                <span>Favourite</span>
+                <a href="{% url 'favourite_post' pk=post.pk %}" class="heart" title="Favourite">
+                    <i class="far fa-heart fa-2x"></i>
+                </a>
+            {% endif %}
+        </div>
+        {% endif %}
+        {% if post.author == user %}
+        <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'post-update' post.id %}">Update</a>
+        <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'post-delete' post.id %}">Delete</a>
+        {% endif %}
+        <div class="post-tags"><a href="#" class="tag">#Business</a><a href="#" class="tag">#Tricks</a><a href="#" class="tag">#Financial</a><a href="#" class="tag">#Economy</a></div>
+        <div class="posts-nav d-flex justify-content-between align-items-stretch flex-column flex-md-row"><a href="#" class="prev-post text-left d-flex align-items-center">
+          <div class="icon prev"><i class="fa fa-angle-left"></i></div>
+          <div class="text"><strong class="text-primary">Previous Post </strong>
+            <h6>I Bought a Wedding Dress.</h6>
+          </div></a><a href="#" class="next-post text-right d-flex align-items-center justify-content-end">
+            <div class="text"><strong class="text-primary">Next Post </strong>
+              <h6>I Bought a Wedding Dress.</h6>
+            </div>
+            <div class="icon next"><i class="fa fa-angle-right">   </i></div></a></div>
+            <div class="row main-comment-section">
+            {% if not post.restrict_comments %}
+
+                <!--COMMENTS AND REPLIES-->
+                {% include 'blog/comment_section.html' %}
+                <!--COMMENTS AND REPLIES END-->
+
+            {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+<!-- SIDEBAR -->
+{% include 'blog/blog_sidebar.html' with most_recent=most_recent category_count=category_count %}
+
+{% endblock %}

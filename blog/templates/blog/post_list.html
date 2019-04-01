@@ -1,0 +1,56 @@
+{% extends 'blog/base.html' %}
+{% block content %}
+	<div class="col-sm-8">
+    {% for post in posts %}
+    	<a href="{{ post.get_absolute_url }}" >
+    		<h2>{{ post.title }}</h2>
+    	</a>
+
+    	<p>{{ post.content|safe|truncatewords:30 }}</p>
+    	<p class="post-meta">Posted by
+            <img class="rounded-circle img-author" src="{{ post.author.profile.image.url }}">
+            <a href="{% url 'user-posts' post.author.username %}">{{ post.author }}</a>
+            on {{ post.created|date:"F d, Y" }}
+        </p>
+        <span class="comment-count"><b>Comments: {{ post.comments.count }}</b> </span>
+        |<span class="likes-count"><b> Likes: {{ post.total_likes }} </b> </span>
+        <hr>
+	{% empty %}
+        <h3>No Result Found For The Search Query "{{ request.GET.q }}" </h3>
+    {% endfor %}
+        <!-- Pager -->
+    {% if is_paginated %}
+        {% if page_obj.has_previous %}
+            <div class="clearfix">
+                <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
+                <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+            </div>
+        {% endif %}
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+            <div class="clearfix">
+                <a class="btn btn-outline-info mb-4" href="?page=1">Next</a>
+                <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">Last</a>
+            </div>
+        {% endif %}
+    {% endif %}
+    </div>
+
+    <div class="col-sm-4 text-center">
+    	<h3>Popular Posts</h3>
+    	<ul class="nav flex-column justify-content-center">
+            {% for post in popular_posts %}
+    		<li class="nav-item">
+    			<a class="nav-link" href="{% url 'post-detail' slug=post.slug %}">{{ post.title }}</a>
+    		</li>
+    		{% endfor %}
+		</ul>
+    </div>
+
+{% endblock %}

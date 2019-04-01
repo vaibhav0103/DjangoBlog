@@ -1,0 +1,10 @@
+*.pyc
+keys.py
+db.sqlite3
+venv/
+untitled.sublime-project
+untitled.sublime-workspace
+
+.idea/
+media_cdn/
+static_cdn/

@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    {% include 'blog/head.html' %}
+</head>
+<body>
+    
+    {% include 'blog/nav-new.html' %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} ">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    
+    <div class="container my-4">
+        <div class="row">
+            {% block content %}
+
+            {% endblock %}
+        </div>
+    </div>
+
+    <hr>
+    {% include 'blog/blog_footer.html' %}
+
+    {% include 'blog/script.html' %}
+
+</body>
+</html>

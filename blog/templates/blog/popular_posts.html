@@ -1,0 +1,15 @@
+{% extends 'blog/base.html' %}
+{% block content %}
+
+	<div class="col-sm-4 text-center">
+    	<h3>Top Posts</h3>
+    	<ul class="nav flex-column justify-content-center">
+            {% for post in popular_posts %}
+    		<li class="nav-item">
+    			<a class="nav-link" href="#">{{ post }}</a>
+    		</li>
+    		{% endfor %}
+		</ul>
+    </div>
+
+{% endblock %}
